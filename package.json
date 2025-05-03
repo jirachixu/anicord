@@ -1,0 +1,15 @@
+{
+  "name": "anicord",
+  "version": "1.0.0",
+  "description": "a discord bot to view anime and connect to myanimelist",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ruiqi Xu",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.19.2",
+    "dotenv": "^16.5.0"
+  }
+}
