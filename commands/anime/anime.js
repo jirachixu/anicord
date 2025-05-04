@@ -17,7 +17,6 @@ module.exports = {
             const limit = interaction.options.getInteger('limit') ?? 10;
             let results = [];
             let embeds = [];
-            const reply = await interaction.deferReply();
 
             if (!anime || !anime.trim()) {
                 await interaction.reply({ 
@@ -33,6 +32,8 @@ module.exports = {
                     flags: MessageFlags.Ephemeral
                 })
             }
+
+            const reply = await interaction.deferReply();
 
             const response = await fetch(`https://api.myanimelist.net/v2/anime?q=${anime}&limit=${limit}`, {
                 headers: {

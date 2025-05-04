@@ -19,7 +19,6 @@ module.exports = {
             const type = interaction.options.getString('type') ?? 'all';
             let results = [];
             let embeds = [];
-            const reply = await interaction.deferReply();
 
             if (!(reply in ['all', 'airing', 'upcoming', 'movie'])) {
                 await interaction.reply({
@@ -27,6 +26,8 @@ module.exports = {
                     flags: MessageFlags.Ephemeral
                 })
             }
+
+            const reply = await interaction.deferReply();
 
             const response = await fetch(`https://api.myanimelist.net/v2/anime/ranking?ranking_type=${type}&limit=20`, {
                 headers: {
