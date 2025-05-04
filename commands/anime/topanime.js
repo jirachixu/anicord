@@ -76,7 +76,7 @@ module.exports = {
                     )
                     .setImage(`${result.main_picture.medium}`)
                     .setTimestamp()
-                    .setFooter({ text: `Search Results  •  Page ${i} of ${results.length}` });
+                    .setFooter({ text: `Top Anime (${type})  •  Page ${i} of ${results.length}` });
                 embeds.push(embed);
                 i++;
             }
