@@ -110,9 +110,9 @@ module.exports = {
             });
 
             collector.on('collect', async i => {
-                if (i.customId === `prev-${interaction.user.id}`) {
+                if (i.customId === `prev-${i.user.id}`) {
                     currentPage--;
-                } else if (i.customId === `next-${interaction.user.id}`) {
+                } else if (i.customId === `next-${i.user.id}`) {
                     currentPage++;
                 }
 
