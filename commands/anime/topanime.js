@@ -50,7 +50,6 @@ module.exports = {
                 const result = await anime.json();
                 results.push(result);
             }
-            console.log(results);
 
             let i = 1;
             for (const result of results) {
