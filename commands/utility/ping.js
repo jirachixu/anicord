@@ -6,6 +6,9 @@ module.exports = {
         .setName('ping')
         .setDescription('Gets your latency in milliseconds!'),
     async execute(interaction) {
-        await interaction.reply({ content: `Latency is ${Date.now() - interaction.createdTimestamp} ms!`, flags: MessageFlags.Ephemeral });
+        await interaction.reply({ 
+            content: `Latency is ${Date.now() - interaction.createdTimestamp} ms!`, 
+            flags: MessageFlags.Ephemeral 
+        });
     },
 };
