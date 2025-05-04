@@ -6,7 +6,8 @@ module.exports = {
         .setDescription('Searches for the anime specified.')
         .addStringOption(option => 
             option.setName('anime')
-                .setDescription('The anime to find'))
+                .setDescription('The anime to find')
+                .setRequired(true))
         .addIntegerOption(option => 
             option.setName('limit')
                 .setDescription('How many matches to show (default is 10, max is 20)')
@@ -17,14 +18,6 @@ module.exports = {
             const limit = interaction.options.getInteger('limit') ?? 10;
             let results = [];
             let embeds = [];
-
-            if (!anime || !anime.trim()) {
-                await interaction.reply({ 
-                    content: 'You must specify an anime to find!',
-                    flags: MessageFlags.Ephemeral
-                });
-                return
-            }
 
             if (limit > 20) {
                 await interaction.reply({
