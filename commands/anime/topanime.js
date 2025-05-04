@@ -1,40 +1,34 @@
-const { SlashCommandBuilder, MessageFlags, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js')
+const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageFlags } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('anime')
-        .setDescription('Searches for the anime specified.')
+        .setName('topanime')
+        .setDescription('Searches for the top 20 anime of the type specified.')
         .addStringOption(option => 
-            option.setName('anime')
-                .setDescription('The anime to find'))
-        .addIntegerOption(option => 
-            option.setName('limit')
-                .setDescription('How many matches to show (default is 10, max is 20)')
+            option.setName('type')
+                .setDescription('Options: all, airing, upcoming, movie')
+                .setChoices(
+                    { name: 'all anime', value: 'all' },
+                    { name: 'current airing anime', value: 'airing' },
+                    { name: 'upcoming anime', value: 'upcoming' }, 
+                    { name: 'anime movies', value: 'movie' },
+                )
         ),
     async execute(interaction) {
         try {
-            const anime = interaction.options.getString('anime');
-            const limit = interaction.options.getInteger('limit') ?? 10;
+            const type = interaction.options.getString('type') ?? 'all';
             let results = [];
             let embeds = [];
             const reply = await interaction.deferReply();
 
-            if (!anime || !anime.trim()) {
-                await interaction.reply({ 
-                    content: 'You must specify an anime to find!',
-                    flags: MessageFlags.Ephemeral
-                });
-                return
-            }
-
-            if (limit > 20) {
+            if (!(reply in ['all', 'airing', 'upcoming', 'movie'])) {
                 await interaction.reply({
-                    content: 'Maximum limit is 20!',
+                    content: 'Invalid choice of type!',
                     flags: MessageFlags.Ephemeral
                 })
             }
 
-            const response = await fetch(`https://api.myanimelist.net/v2/anime?q=${anime}&limit=${limit}`, {
+            const response = await fetch(`https://api.myanimelist.net/v2/anime/ranking?ranking_type=${type}&limit=20`, {
                 headers: {
                     'X-MAL-CLIENT-ID': '46f84287b4f624e8fc1024ed1736bcc9'
                 }
@@ -45,7 +39,7 @@ module.exports = {
             }
 
             const data = await response.json();
-
+            
             for (const node of data.data) {
                 const id = node.node.id
                 const anime = await fetch(`https://api.myanimelist.net/v2/anime/${id}?fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics`, {
@@ -56,6 +50,7 @@ module.exports = {
                 const result = await anime.json();
                 results.push(result);
             }
+            console.log(results);
 
             let i = 1;
             for (const result of results) {
@@ -70,6 +65,7 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setColor(0xff99dd)
                     .setTitle(`${result.title}`)
+                    .setAuthor({ name: `Rank ${i}` })
                     .setDescription(`${result.synopsis}`)
                     .setFields(
                         { name: 'Rating', value: `${result.mean ?? 'No Rating'}`, inline: true }, 
@@ -119,7 +115,7 @@ module.exports = {
                 nextButton.setDisabled(currentPage === embeds.length - 1);
 
                 await i.update({ embeds: [embeds[currentPage]], components: [row] });
-            })
+            }) 
         } catch (error) {
             console.error(error);
         }
