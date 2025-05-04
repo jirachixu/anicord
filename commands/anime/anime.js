@@ -96,7 +96,7 @@ module.exports = {
 
             const collector = reply.createMessageComponentCollector({
                 filter: i => i.customId === `prev-${interaction.user.id}` || i.customId === `next-${interaction.user.id}`,
-                time: 60000,
+                time: 300000,
             });
 
             collector.on('collect', async i => {
