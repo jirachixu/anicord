@@ -20,7 +20,7 @@ module.exports = {
             let results = [];
             let embeds = [];
 
-            if (!(reply in ['all', 'airing', 'upcoming', 'movie'])) {
+            if (!(type in ['all', 'airing', 'upcoming', 'movie'])) {
                 await interaction.reply({
                     content: 'Invalid choice of type!',
                     flags: MessageFlags.Ephemeral
