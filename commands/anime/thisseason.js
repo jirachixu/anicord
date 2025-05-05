@@ -1,53 +1,60 @@
-const { SlashCommandBuilder, MessageFlags, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js')
+const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageFlags } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('anime')
-        .setDescription('Searches for the anime specified.')
+        .setName('thisseason')
+        .setDescription('Gets the anime airing this season.')
         .addStringOption(option => 
-            option.setName('anime')
-                .setDescription('The anime to find')
-                .setRequired(true))
-        .addIntegerOption(option => 
-            option.setName('limit')
-                .setDescription('How many matches to show (default is 5, max is 20)'))
-        .addStringOption(option => 
-            option.setName('order')
-                .setDescription('How to order the results (default is popularity)')
+            option.setName('type')
+                .setDescription('what type of anime (leave blank for all)')
                 .setChoices(
-                    { name: 'MAL ID', value: 'mal_id' },
-                    { name: 'title', value: 'title' },
-                    { name: 'start date', value: 'start_date' }, 
-                    { name: 'score', value: 'score' }, 
-                    { name: 'popularity', value: 'popularity' }
+                    { name: 'television (series)', value: 'tv' },
+                    { name: 'movie', value: 'movie' },
+                    { name: 'ova', value: 'ova' }, 
+                    { name: 'special', value: 'special' }, 
+                    { name: 'ona', value: 'ona' }, 
+                ))
+        .addIntegerOption(option =>
+            option.setName('continuing')
+                .setDescription('whether to include anime that started airing in a previous season (default is no)')
+                .setChoices(
+                    { name: 'yes', value: 1 }, 
+                    { name: 'no', value: 0 }
                 )
         ),
     async execute(interaction) {
         try {
-            const anime = interaction.options.getString('anime');
-            const limit = interaction.options.getInteger('limit') ?? 5;
-            const order_by = interaction.options.getString('order') ?? 'popularity';
+            let type = interaction.options.getString('type');
+            let continuing = interaction.options.getBoolean('continuing') ?? 0;
             let results = [];
             let embeds = [];
 
-            if (limit > 20) {
-                await interaction.reply({
-                    content: 'Maximum limit is 20!',
-                    flags: MessageFlags.Ephemeral
-                })
-                return;
-            }
-
             const reply = await interaction.deferReply();
 
-            const response = await fetch(`https://api.jikan.moe/v4/anime?limit=${limit}&q=${anime}&order_by=${order_by}`);
+            let response = '';
+
+            if (!type && !continuing) {
+                response = await fetch(`https://api.jikan.moe/v4/seasons/now`);
+                type = 'all';
+                continuing = 'not including continuing'
+            } else if (!type && continuing) {
+                response = await fetch(`https://api.jikan.moe/v4/seasons/now?continuing`);
+                type = 'all';
+                continuing = 'including continuing'
+            } else if (type && !continuing) {
+                response = await fetch(`https://api.jikan.moe/v4/seasons/now?type=${type}`);
+                continuing = 'not including continuing'
+            } else {
+                response = await fetch(`https://api.jikan.moe/v4/seasons/now?type=${type}&continuing`);
+                continuing = 'including continuing'
+            }
             
             if (!response.ok) {
                 throw new Error('Could not fetch resource.');
             }
 
             const data = await response.json();
-
+            
             for (const node of data.data) {
                 results.push(node);
             }
@@ -92,7 +99,7 @@ module.exports = {
                     )
                     .setImage(`${result.images.jpg.image_url}`)
                     .setTimestamp()
-                    .setFooter({ text: `Search Results  •  Page ${i} of ${results.length}` });
+                    .setFooter({ text: `Anime this season (${type}, ${continuing})  •  Page ${i} of ${results.length}` });
                 embeds.push(embed);
                 i++;
             }
@@ -131,7 +138,7 @@ module.exports = {
                 nextButton.setDisabled(currentPage === embeds.length - 1);
 
                 await i.update({ embeds: [embeds[currentPage]], components: [row] });
-            })
+            }) 
         } catch (error) {
             await interaction.editReply({ content: 'An error occurred!', flags: MessageFlags.Ephemeral });
             console.error(error);
