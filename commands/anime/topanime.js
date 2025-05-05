@@ -36,14 +36,14 @@ module.exports = {
 
             if (!type && !status) {
                 response = await fetch(`https://api.jikan.moe/v4/top/anime?limit=20`);
-                type = 'all';
-                status = 'all';
+                type = 'all types';
+                status = 'all statuses';
             } else if (!type && status) {
                 response = await fetch(`https://api.jikan.moe/v4/top/anime?filter=${status}&limit=20`);
-                type = 'all';
+                type = 'all types';
             } else if (type && !status) {
                 response = await fetch(`https://api.jikan.moe/v4/top/anime?type=${type}&limit=20`);
-                status = 'all';
+                status = 'all statuses';
             } else {
                 response = await fetch(`https://api.jikan.moe/v4/top/anime?type=${type}&filter=${status}&limit=20`);
             }

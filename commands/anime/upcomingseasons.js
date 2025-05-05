@@ -2,8 +2,8 @@ const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRow
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('thisseason')
-        .setDescription('Gets the anime airing this season.')
+        .setName('upcomingseasons')
+        .setDescription('Gets the anime airing in upcoming seasons.')
         .addStringOption(option => 
             option.setName('type')
                 .setDescription('what type of anime (leave blank for all)')
@@ -34,18 +34,18 @@ module.exports = {
             let response = '';
 
             if (!type && !continuing) {
-                response = await fetch(`https://api.jikan.moe/v4/seasons/now`);
+                response = await fetch(`https://api.jikan.moe/v4/seasons/upcoming`);
                 type = 'all types';
                 continuing = 'not including continuing'
             } else if (!type && continuing) {
-                response = await fetch(`https://api.jikan.moe/v4/seasons/now?continuing`);
+                response = await fetch(`https://api.jikan.moe/v4/seasons/upcoming?continuing`);
                 type = 'all types';
                 continuing = 'including continuing'
             } else if (type && !continuing) {
-                response = await fetch(`https://api.jikan.moe/v4/seasons/now?type=${type}`);
+                response = await fetch(`https://api.jikan.moe/v4/seasons/upcoming?type=${type}`);
                 continuing = 'not including continuing'
             } else {
-                response = await fetch(`https://api.jikan.moe/v4/seasons/now?type=${type}&continuing`);
+                response = await fetch(`https://api.jikan.moe/v4/seasons/upcoming?type=${type}&continuing`);
                 continuing = 'including continuing'
             }
             
@@ -99,7 +99,7 @@ module.exports = {
                     )
                     .setImage(`${result.images.jpg.image_url}`)
                     .setTimestamp()
-                    .setFooter({ text: `Anime this season (${type}, ${continuing})  •  Page ${i} of ${results.length}` });
+                    .setFooter({ text: `Anime in upcoming seasons (${type}, ${continuing})  •  Page ${i} of ${results.length}` });
                 embeds.push(embed);
                 i++;
             }
