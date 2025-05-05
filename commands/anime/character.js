@@ -2,31 +2,20 @@ const { SlashCommandBuilder, MessageFlags, EmbedBuilder, ButtonBuilder, ButtonSt
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('anime')
-        .setDescription('Searches for the anime specified.')
+        .setName('character')
+        .setDescription('Searches for the character specified.')
         .addStringOption(option => 
-            option.setName('anime')
-                .setDescription('The anime to find')
+            option.setName('character')
+                .setDescription('The character to find')
                 .setRequired(true))
         .addIntegerOption(option => 
             option.setName('limit')
-                .setDescription('How many matches to show (default is 5, max is 20)'))
-        .addStringOption(option => 
-            option.setName('order')
-                .setDescription('How to order the results (default is popularity)')
-                .setChoices(
-                    { name: 'MAL ID', value: 'mal_id' },
-                    { name: 'title', value: 'title' },
-                    { name: 'start date', value: 'start_date' }, 
-                    { name: 'score', value: 'score' }, 
-                    { name: 'popularity', value: 'popularity' }
-                )
+                .setDescription('How many matches to show (default is 5, max is 20)')
         ),
     async execute(interaction) {
         try {
-            const anime = interaction.options.getString('anime');
+            const character = interaction.options.getString('character');
             const limit = interaction.options.getInteger('limit') ?? 5;
-            const order_by = interaction.options.getString('order') ?? 'popularity';
             let results = [];
             let embeds = [];
 
@@ -40,7 +29,7 @@ module.exports = {
 
             const reply = await interaction.deferReply();
 
-            const response = await fetch(`https://api.jikan.moe/v4/anime?limit=${limit}&q=${anime}&order_by=${order_by}`);
+            const response = await fetch(`https://api.jikan.moe/v4/characters?limit=${limit}&q=${character}`);
             
             if (!response.ok) {
                 throw new Error('Could not fetch resource.');
@@ -54,42 +43,11 @@ module.exports = {
 
             let i = 1;
             for (const result of results) {
-                let genres = '';
-
-                for (const genre of result.genres) {
-                    genres = genres + genre.name + ', '
-                }
-
-                genres = genres.substring(0, genres.length - 2)
-
-                let from = '';
-                let to = '';
-
-                if (result.aired.from === null) {
-                    from = 'No start date setT';
-                } else {
-                    from = result.aired.from;
-                }
-
-                if (result.aired.to === null) {
-                    to = 'Not finished airingT';
-                } else {
-                    to = result.aired.to;
-                }
-
                 const embed = new EmbedBuilder()
                     .setColor(0xff99dd)
-                    .setTitle(`${result.title ?? 'No Title'}`)
+                    .setTitle(`${result.name ?? 'No Name'}`)
                     .setURL(`${result.url}`)
-                    .setDescription(`${result.synopsis ?? 'No Synopsis'}`)
-                    .setFields(
-                        { name: 'Rating', value: `${result.score ?? 'No Rating'}`, inline: true }, 
-                        { name: 'Status', value: `${result.status ?? 'No Status'}`, inline: true }, 
-                        { name: 'Start Date', value: `${from.substring(0, from.indexOf('T'))}`, inline: true }, 
-                        { name: 'End Date', value: `${to.substring(0, to.indexOf('T'))}`, inline: true}, 
-                        { name: 'Episodes', value: `${result.episodes ?? 0}`, inline: true },  
-                        { name: 'Genres', value: `${genres}`, inline: true }
-                    )
+                    .setDescription(`${result.about ?? 'No Information'}`)
                     .setImage(`${result.images.jpg.image_url}`)
                     .setTimestamp()
                     .setFooter({ text: `Search Results  •  Page ${i} of ${results.length}` });
