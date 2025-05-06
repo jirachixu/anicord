@@ -43,11 +43,43 @@ module.exports = {
 
             let i = 1;
             for (const result of results) {
+                
+                const anime = await fetch(`https://api.jikan.moe/v4/characters/${result.mal_id}/anime`);
+                let animeData = await anime.json();
+                let animeResults = [];
+
+                if (animeData.data === undefined) {
+                    animeData = {
+                        'data': [undefined]
+                    };
+                }
+
+                for (ar of animeData.data) {
+                    animeResults.push(ar);
+                }
+
+                let animeResult;
+                if (animeResults[0] === undefined) {
+                    animeResult = {
+                        'role': 'N/A',
+                        'anime': {
+                            'title': 'N/A',
+                            'url': ''
+                        }
+                    };
+                } else {
+                    animeResult = animeResults[0];
+                }
+                
                 const embed = new EmbedBuilder()
                     .setColor(0xff99dd)
                     .setTitle(`${result.name ?? 'No Name'}`)
                     .setURL(`${result.url}`)
                     .setDescription(`${result.about ?? 'No Information'}`)
+                    .setFields(
+                        { name: 'Anime', value: `[${animeResult.anime.title ?? 'N/A'}](${animeResult.anime.url ?? ''})`, inline: true }, 
+                        { name: 'Role', value: animeResult.role ?? 'N/A', inline: true }
+                    )
                     .setImage(`${result.images.jpg.image_url}`)
                     .setTimestamp()
                     .setFooter({ text: `Search Results  •  Page ${i} of ${results.length}` });

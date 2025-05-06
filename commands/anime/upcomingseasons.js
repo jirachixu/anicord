@@ -86,7 +86,7 @@ module.exports = {
 
                 const embed = new EmbedBuilder()
                     .setColor(0xff99dd)
-                    .setTitle(`${result.title ?? 'No Title'}`)
+                    .setTitle(`${result.title_english ?? result.title}`)
                     .setURL(`${result.url}`)
                     .setDescription(`${result.synopsis ?? 'No Synopsis'}`)
                     .setFields(
