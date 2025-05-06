@@ -66,10 +66,10 @@ module.exports = {
                 type = 'all types';
                 continuing = 'including continuing'
             } else if (type && !continuing) {
-                response = await fetch(`https://api.jikan.moe/v4/seasons/${year}/${season}?type=${type}`);
+                response = await fetch(`https://api.jikan.moe/v4/seasons/${year}/${season}?filter=${type}`);
                 continuing = 'not including continuing'
             } else {
-                response = await fetch(`https://api.jikan.moe/v4/seasons/${year}/${season}?type=${type}&continuing`);
+                response = await fetch(`https://api.jikan.moe/v4/seasons/${year}/${season}?filter=${type}&continuing`);
                 continuing = 'including continuing'
             }
             
@@ -164,7 +164,7 @@ module.exports = {
                 await i.update({ embeds: [embeds[currentPage]], components: [row] });
             }) 
         } catch (error) {
-            await interaction.editReply({ content: 'An error occurred!', flags: MessageFlags.Ephemeral });
+            await interaction.editReply({ content: 'An error occurred! (Most likely API rate limit)', flags: MessageFlags.Ephemeral });
             console.error(error);
         }
     },

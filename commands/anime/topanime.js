@@ -140,7 +140,7 @@ module.exports = {
                 await i.update({ embeds: [embeds[currentPage]], components: [row] });
             }) 
         } catch (error) {
-            await interaction.editReply({ content: 'An error occurred!', flags: MessageFlags.Ephemeral });
+            await interaction.editReply({ content: 'An error occurred! (Most likely API rate limit)', flags: MessageFlags.Ephemeral });
             console.error(error);
         }
     },

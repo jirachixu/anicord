@@ -75,7 +75,7 @@ module.exports = {
                     .setColor(0xff99dd)
                     .setTitle(`${result.name ?? 'No Name'}`)
                     .setURL(`${result.url}`)
-                    .setDescription(`${result.about ?? 'No Information'}`)
+                    .setDescription(`${(result.about && result.about.length >= 1) ? result.about : 'No Information'}`)
                     .setFields(
                         { name: 'Anime', value: `[${animeResult.anime.title ?? 'N/A'}](${animeResult.anime.url ?? ''})`, inline: true }, 
                         { name: 'Role', value: animeResult.role ?? 'N/A', inline: true }
@@ -121,9 +121,9 @@ module.exports = {
                 nextButton.setDisabled(currentPage === embeds.length - 1);
 
                 await i.update({ embeds: [embeds[currentPage]], components: [row] });
-            })
+            });
         } catch (error) {
-            await interaction.editReply({ content: 'An error occurred!', flags: MessageFlags.Ephemeral });
+            await interaction.editReply({ content: 'An error occurred! (Most likely API rate limit)', flags: MessageFlags.Ephemeral });
             console.error(error);
         }
     },

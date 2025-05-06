@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageFlags } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,6 +17,11 @@ module.exports = {
         ),
     async execute(interaction) {
         const faces = interaction.options.getInteger('faces') ?? 6;
-        await interaction.reply({ content: `Result for a die with ${faces} faces: ${Math.floor(Math.random() * faces + 1)}` });
+        const embed = new EmbedBuilder()
+            .setColor(0xff99dd)
+            .setFields(
+                { name: `Result (${faces} faces)`, value: `${Math.floor(Math.random() * faces + 1)}` }
+            );
+        await interaction.reply({ embeds: [embed] });
     },
 };
