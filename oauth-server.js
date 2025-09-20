@@ -71,8 +71,7 @@ app.get('/oauth/callback', async (req, res) => {
             } else {
                 jsonData = {};
             }
-            jsonData.state = state;
-            jsonData.access_token = access_token;
+            jsonData[state] = access_token;
 
             fs.writeFile('access_tokens.json', JSON.stringify(jsonData), (err) => {
                 if (err) {
