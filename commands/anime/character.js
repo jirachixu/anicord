@@ -29,7 +29,7 @@ module.exports = {
 
             const reply = await interaction.deferReply();
 
-            const response = await fetch(`https://api.jikan.moe/v4/characters?limit=${limit}&q=${character}`);
+            const response = await fetch(`https://api.jikan.moe/v4/characters?limit=${limit}&q=${character}&order_by=favorites&sort=desc`);
             
             if (!response.ok) {
                 throw new Error('Could not fetch resource.');

@@ -95,7 +95,8 @@ module.exports = {
                         { name: 'Start Date', value: `${from.substring(0, from.indexOf('T'))}`, inline: true }, 
                         { name: 'End Date', value: `${to.substring(0, to.indexOf('T'))}`, inline: true}, 
                         { name: 'Episodes', value: `${result.episodes ?? 0}`, inline: true },  
-                        { name: 'Genres', value: `${genres}`, inline: true }
+                        { name: 'Genres', value: `${genres}`, inline: true }, 
+                        { name: 'ID', value: `${result.mal_id}`, inline: true }
                     )
                     .setImage(`${result.images.jpg.image_url}`)
                     .setTimestamp()
