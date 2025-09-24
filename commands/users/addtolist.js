@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, MessageFlags, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { SlashCommandBuilder, MessageFlags, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, Message } = require('discord.js');
 const fs = require('fs');
 const { exec } = require('child_process');
 
@@ -54,31 +54,31 @@ module.exports = {
                         return;
                     }
                     const token = tokens[uid];
-                    
-                    const command = 
-                        `curl "https://api.myanimelist.net/v2/anime/${animeId}/my_list_status" --request PUT -d status=${status}${score ? ` -d score=${score}` : ''}${episodesWatched ? ` -d num_watched_episodes=${episodesWatched}` : ''} -H "Authorization: Bearer ${token}"`
-                    
-                    let loggedIn = true;
-                    
-                    exec(command, { encoding: 'utf-8' }, (error, stdout, stderr) => {
-                        if (error !== null) {
-                            console.error(error);
-                            loggedIn = false;
-                            return;
-                        }
-                    });
 
-                    if (!loggedIn) {
-                        interaction.reply({ content: 'Please log in using /login.', flags: MessageFlags.Ephemeral });
+                    const body = new URLSearchParams({ 'status': `${status}` });
+                    score && body.append('score', `${score}`);
+                    episodesWatched && body.append('num_watched_episodes', `${episodesWatched}`);
+                    
+                    const response = await fetch(`https://api.myanimelist.net/v2/anime/${animeId}/my_list_status`, {
+                                                    method: 'PUT',
+                                                    headers: {
+                                                        'Authorization': `Bearer ${token}`
+                                                    },
+                                                    body: body
+                                                });
+
+                    if (!response.ok) {
+                        await interaction.reply({ content: 'Please log into MyAnimeList using /login.', flags: MessageFlags.Ephemeral });
                     }
 
-                    const reply = await interaction.deferReply();
+                    const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
                     const embed = new EmbedBuilder()
                         .setColor(0xff99dd)
-                        .setDescription(`Successfully updated your list! Use /mylist to view your updated list.`);
+                        .setDescription(`Successfully updated your list! Use /mylist to view your updated list.`)
+                        .setTimestamp();
 
-                    await interaction.editReply({ embeds: [embed] });
+                    await interaction.editReply({ embeds: [embed], flags: MessageFlags.Ephemeral });
                 } catch (error) {
                     interaction.reply({ content: 'An error occurred!', flags: MessageFlags.Ephemeral });
                     console.error(error);
