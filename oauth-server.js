@@ -6,7 +6,7 @@ const fs = require('fs');
 const { generateChallenge } = require('pkce-challenge');
 
 const app = express();
-const port = 3000;
+const port = 7115;
 
 // In-memory store for code verifiers
 const codeVerifierStore = new Map();
