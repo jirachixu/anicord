@@ -3,6 +3,7 @@ const { verifyChallenge, generateChallenge } = require('pkce-challenge');
 const pkceChallenge = require('pkce-challenge').default;
 const config = require('../../config.json');
 const axios = require('axios');
+const port = 7115;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,7 +18,7 @@ module.exports = {
             const state = interaction.user.id;
 
             try {
-                await axios.post('http://localhost:3000/store-verifier', {
+                await axios.post(`http://localhost:${port}/store-verifier`, {
                     userId: state,
                     codeVerifier: codeVerifier,
                 });
