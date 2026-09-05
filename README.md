@@ -1,0 +1,1 @@
+This is a Discord bot that can connect with your MyAnimeList account, allowing you to update ratings, lists, etc. You can also easily search for anime by name with a few other optional parameters, view top anime, view seasonal anime, and more. 
